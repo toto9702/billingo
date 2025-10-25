@@ -12,8 +12,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Financial Statistics API")
+                        .title("Billingo szamlazo API")
                         .version("1.0")
-                        .description("Ez egy pénzügyi statisztikai API dokumentáció"));
+                        .description("Billingo számlázóprogram"));
     }
 }
