@@ -33,3 +33,7 @@ build/
 .vscode/
 
 ../.idea/
+.gitattributes
+.mvn/wrapper/
+/mvnw/
+mvnw.cmd
