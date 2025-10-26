@@ -5,10 +5,21 @@ let allPartners = [];
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Billingo Számlázó alkalmazás inicializálva');
 
-    document.getElementById('saveForm').addEventListener('submit', handleSave);
-    document.getElementById('updateForm').addEventListener('submit', handleUpdate);
+    const saveForm = document.getElementById('saveForm');
+    const updateForm = document.getElementById('updateForm');
+    const updateEmail = document.getElementById('update-currentEmail');
 
-    document.getElementById('update-currentEmail').addEventListener('change', loadPartnerDataByEmail);
+    if (saveForm) {
+        saveForm.addEventListener('submit', handleSave);
+    }
+
+    if (updateForm) {
+        updateForm.addEventListener('submit', handleUpdate);
+    }
+
+    if (updateEmail) {
+        updateEmail.addEventListener('change', loadPartnerDataByEmail);
+    }
 
     setupMobileMenu();
 });
@@ -18,18 +29,29 @@ function showSection(sectionId) {
         section.classList.remove('active');
     });
 
-    document.getElementById(sectionId).classList.add('active');
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
     clearMessages();
 
     if (sectionId === 'list') {
         loadPartners();
     } else if (sectionId === 'update') {
         loadPartnerEmails();
+    } else if (sectionId === 'calendar') {
+        initializeCalendar();
     }
 }
 
 async function loadPartnerEmails() {
     const selectElement = document.getElementById('update-currentEmail');
+
+    if (!selectElement) {
+        console.error('update-currentEmail elem nem található');
+        return;
+    }
 
     try {
         const response = await fetch(`${API_BASE_URL}/emails`);
@@ -122,8 +144,7 @@ async function handleSave(e) {
         });
 
         if (response.ok) {
-            const message = await response.text();
-            showMessage(messageDiv, message, 'success');
+            showMessage(messageDiv, 'Partner sikeresen mentve!', 'success');
             form.reset();
             clearFormErrors(form);
         } else {
@@ -179,8 +200,7 @@ async function handleUpdate(e) {
         });
 
         if (response.ok) {
-            const message = await response.text();
-            showMessage(messageDiv, message, 'success');
+            showMessage(messageDiv, 'Partner sikeresen frissítve!', 'success');
             loadPartnerEmails();
         } else {
             const errorData = await response.json();
@@ -203,6 +223,11 @@ async function handleUpdate(e) {
 async function loadPartners() {
     const listDiv = document.getElementById('partners-list');
     const messageDiv = document.getElementById('list-message');
+
+    if (!listDiv) {
+        console.error('partners-list elem nem található');
+        return;
+    }
 
     listDiv.innerHTML = '<div style="text-align: center; padding: 2rem;"><span class="loading" style="width: 40px; height: 40px;"></span></div>';
 
@@ -229,6 +254,11 @@ async function loadPartners() {
 
 function displayPartners(partners) {
     const listDiv = document.getElementById('partners-list');
+
+    if (!listDiv) {
+        console.error('partners-list elem nem található');
+        return;
+    }
 
     if (partners.length === 0) {
         listDiv.innerHTML = '<p style="text-align: center; color: #6B7280;">Nincs megjeleníthető partner.</p>';
@@ -275,7 +305,10 @@ function displayPartners(partners) {
 }
 
 function filterPartners() {
-    const searchTerm = document.getElementById('search').value.toLowerCase();
+    const searchInput = document.getElementById('search');
+    if (!searchInput) return;
+
+    const searchTerm = searchInput.value.toLowerCase();
 
     const filtered = allPartners.filter(partner =>
         partner.name.toLowerCase().includes(searchTerm) ||
@@ -347,6 +380,8 @@ function handleValidationErrors(form, errors) {
 }
 
 function showMessage(messageDiv, text, type) {
+    if (!messageDiv) return;
+
     messageDiv.textContent = text;
     messageDiv.className = `message ${type}`;
     messageDiv.style.display = 'block';
@@ -364,7 +399,7 @@ function clearMessages() {
 
 function setupMobileMenu() {
     const dropdown = document.querySelector('.dropdown');
-    if (window.innerWidth <= 768) {
+    if (dropdown && window.innerWidth <= 768) {
         dropdown.addEventListener('click', (e) => {
             e.preventDefault();
             dropdown.classList.toggle('active');
@@ -373,6 +408,7 @@ function setupMobileMenu() {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -380,7 +416,7 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
 window.addEventListener('resize', () => {

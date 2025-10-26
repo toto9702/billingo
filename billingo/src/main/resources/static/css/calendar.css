@@ -1,0 +1,414 @@
+/* ===== NAPTÁR CONTAINER ===== */
+.calendar-container {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.calendar-header h2 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.calendar-navigation {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.nav-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.nav-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.current-week {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* ===== NAPTÁR RÁCS - 20PX SOROK ===== */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr); /* ✅ 60px -> 100px */
+    grid-template-rows: auto;
+    grid-auto-rows: 20px;
+    gap: 1px;
+    background: #E5E7EB;
+    border: 2px solid #E5E7EB;
+    border-radius: var(--border-radius);
+    overflow: visible;
+}
+
+.calendar-day-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 0.6rem 0.3rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    grid-row: 1;
+}
+
+.calendar-day-header.time-header {
+    background: var(--dark-bg);
+}
+
+.calendar-time-slot {
+    background: var(--dark-bg);
+    color: white;
+    padding: 0.15rem;
+    text-align: center;
+    font-size: 0.55rem; /* ✅ Kicsit nagyobb betű */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+}
+
+.calendar-cell {
+    background: white;
+    height: 20px;
+    padding: 0;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+    overflow: visible;
+}
+
+.calendar-cell:hover:not(.has-lesson) {
+    background: #F3F4F6;
+}
+
+.calendar-cell.has-lesson {
+    cursor: default;
+    overflow: visible;
+    z-index: 10;
+}
+
+.calendar-cell.drag-over {
+    background: #DBEAFE !important;
+    border: 2px dashed var(--primary-color);
+}
+
+/* ===== ÓRA KÁRTYA - DRAGGABLE ===== */
+.lesson-card {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-left: 3px solid var(--warning-color);
+    border-radius: 4px;
+    font-size: 0.65rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 1px;
+    padding: 0.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    cursor: move; /* ✅ Drag cursor */
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    user-select: none;
+}
+
+.lesson-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 200;
+}
+
+.lesson-card.dragging {
+    opacity: 0.5;
+    transform: scale(1.05);
+    z-index: 1000;
+}
+
+.lesson-card.retained {
+    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+    border-left-color: var(--success-color);
+}
+
+.lesson-time {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.7rem;
+    pointer-events: none; /* ✅ Szöveg ne akadályozza a drag-et */
+}
+
+.lesson-student {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.7rem;
+    pointer-events: none;
+}
+
+.lesson-subject {
+    color: #6B7280;
+    font-size: 0.6rem;
+    pointer-events: none;
+}
+
+.lesson-duration {
+    color: #6B7280;
+    font-size: 0.55rem;
+    font-style: italic;
+    pointer-events: none;
+}
+
+.lesson-actions {
+    display: flex;
+    gap: 0.2rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    background: white;
+    border: none;
+    padding: 0.15rem 0.3rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: var(--transition);
+}
+
+.action-btn:hover {
+    transform: scale(1.15);
+}
+
+.btn-check {
+    color: var(--success-color);
+}
+
+.btn-edit {
+    color: var(--primary-color);
+}
+
+.btn-delete {
+    color: var(--error-color);
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #E5E7EB;
+}
+
+.modal-header h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #6B7280;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.modal-close:hover {
+    color: var(--error-color);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* ===== IDŐPONT KIJELZÉS ===== */
+.selected-datetime {
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.selected-datetime strong {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+/* ===== DÁTUM MÓDOSÍTÓ MEZŐK ===== */
+.datetime-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.datetime-inputs .form-group {
+    margin-bottom: 0;
+}
+
+/* ===== RESPONZÍV DESIGN ===== */
+@media (max-width: 1200px) {
+    .calendar-grid {
+        grid-auto-rows: 18px;
+    }
+
+    .calendar-cell {
+        height: 18px;
+    }
+
+    .calendar-time-slot {
+        height: 18px;
+        font-size: 0.55rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-container {
+        padding: 1rem;
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .calendar-navigation {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .calendar-grid {
+        grid-template-columns: 45px repeat(7, 1fr);
+        font-size: 0.65rem;
+        grid-auto-rows: 16px;
+    }
+
+    .calendar-day-header {
+        padding: 0.5rem 0.2rem;
+        font-size: 0.65rem;
+    }
+
+    .calendar-cell {
+        height: 16px;
+    }
+
+    .calendar-time-slot {
+        height: 16px;
+        font-size: 0.5rem;
+    }
+
+    .lesson-card {
+        font-size: 0.6rem;
+        padding: 0.25rem;
+    }
+
+    .lesson-time,
+    .lesson-student {
+        font-size: 0.65rem;
+    }
+
+    .lesson-subject {
+        font-size: 0.55rem;
+    }
+
+    .lesson-duration {
+        font-size: 0.5rem;
+    }
+
+    .action-btn {
+        font-size: 0.7rem;
+        padding: 0.1rem 0.25rem;
+    }
+
+    .modal-content {
+        padding: 1rem;
+    }
+
+    .datetime-inputs {
+        grid-template-columns: 1fr;
+    }
+}

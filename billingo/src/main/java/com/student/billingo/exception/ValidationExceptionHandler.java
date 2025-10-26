@@ -52,6 +52,20 @@ public class ValidationExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(LessonNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleLessonNotFound(
+            LessonNotFoundException ex) {
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+        errorResponse.put("error", "Óra nem található");
+        errorResponse.put("message", ex.getMessage());
+
+        logger.error("Óra nem található: {}", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
     /**
      * JSON konverziós hiba kezelése
      */
