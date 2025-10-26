@@ -39,9 +39,6 @@ public class LessonService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private static final double HOURLY_RATE = 4000.0;
-
-
     @Transactional
     public void saveLesson(LessonRequest lessonRequest) {
         Partner partner = partnerRepository.findByNameAndStudentName(
@@ -178,7 +175,7 @@ public class LessonService {
         // Órák feldolgozása
         for (Lesson lesson : lessons) {
             int month = lesson.getDate().getMonthValue();
-            double amount = lesson.getDuration() * HOURLY_RATE;
+            double amount = lesson.getDuration() * lesson.getPartner().getPrice();
 
             LessonStatisticsResponse stats = monthlyStats.get(month);
 
@@ -205,8 +202,8 @@ public class LessonService {
         Map<String, LessonStatisticsResponse> studentStats = new LinkedHashMap<>();
 
         for (Lesson lesson : lessons) {
-            String studentName = lesson.getPartner().getName(); //TODO tanuló neve
-            double amount = lesson.getDuration() * HOURLY_RATE;
+            String studentName = lesson.getPartner().getName() + "(" + String.join(", ", getStudentNamesList(lesson.getPartner().getStudentNamesJson())) + ")";
+            double amount = lesson.getDuration() * lesson.getPartner().getPrice();
 
             studentStats.putIfAbsent(studentName, new LessonStatisticsResponse(studentName, 0.0, 0.0, 0.0));
 

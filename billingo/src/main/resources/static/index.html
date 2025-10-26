@@ -6,6 +6,7 @@
     <title>Billingo Számlázó</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/statistics.css">
 </head>
 <body>
 <nav class="navbar">
@@ -29,9 +30,13 @@
             <li class="nav-item">
                 <a href="#" class="nav-link" onclick="showSection('calendar')">📅 Naptár</a>
             </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('statistics')">📊 Statisztikák</a>
+            </li>
         </ul>
     </div>
 </nav>
+
 
 <main class="main-content">
     <!-- WELCOME SECTION -->
@@ -231,6 +236,45 @@
             </div>
         </div>
     </section>
+
+    <!-- STATISTICS SECTION -->
+    <section id="statistics" class="section">
+        <div class="statistics-container">
+            <div class="statistics-header">
+                <h2>📊 Statisztikák</h2>
+                <div class="statistics-controls">
+                    <button class="stat-btn active" id="yearly-btn" onclick="showYearlyStats()">📅 Éves nézet</button>
+                    <button class="stat-btn" id="monthly-btn" onclick="showMonthlyStats()">📆 Havi nézet</button>
+
+                    <select id="year-select" onchange="loadStatistics()">
+                    </select>
+
+                    <select id="month-select" onchange="loadStatistics()" style="display: none;">
+                        <option value="1">Január</option>
+                        <option value="2">Február</option>
+                        <option value="3">Március</option>
+                        <option value="4">Április</option>
+                        <option value="5">Május</option>
+                        <option value="6">Június</option>
+                        <option value="7">Július</option>
+                        <option value="8">Augusztus</option>
+                        <option value="9">Szeptember</option>
+                        <option value="10">Október</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="statistics-summary" id="statistics-summary">
+            </div>
+
+            <div class="chart-container">
+                <canvas id="statistics-chart"></canvas>
+            </div>
+        </div>
+    </section>
+
 </main>
 
 <!-- LESSON MODAL - MÓDOSÍTOTT FORM -->
@@ -309,8 +353,20 @@
 <footer class="footer">
     <p>&copy; 2024 Billingo Számlázó Rendszer</p>
 </footer>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="js/app.js"></script>
 <script src="js/calendar.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('✅ DOM betöltve');
+
+        if (typeof Chart !== 'undefined' && typeof window.initializeStatistics === 'function') {
+            window.initializeStatistics();
+            console.log('✅ Statistics inicializálva');
+        } else {
+            console.error('❌ Chart.js vagy initializeStatistics nem elérhető');
+        }
+    });
+</script>
 </body>
 </html>
