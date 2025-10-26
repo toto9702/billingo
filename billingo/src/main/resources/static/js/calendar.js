@@ -61,7 +61,6 @@ function renderCalendar() {
     // Idősorok (8:00 - 20:00, 15 perces bontás)
     for (let hour = 8; hour <= 19; hour++) {
         for (let minute = 0; minute < 60; minute += 15) {
-            // ✅ ÚJ IDŐFORMÁTUM: 8.00-8.15, 8.15-8.30, stb.
             const startTime = `${hour}.${String(minute).padStart(2, '0')}`;
             const endMinute = minute + 15;
             const endHour = endMinute >= 60 ? hour + 1 : hour;
@@ -158,13 +157,6 @@ function displayLessons() {
                 return;
             }
 
-            console.log(`Óra #${index} dátum konverzió:`, {
-                original: lesson.date,
-                converted: lessonDate.toISOString(),
-                localString: lessonDate.toLocaleString('hu-HU'),
-                timestamp: lessonDate.getTime()
-            });
-
         } catch (error) {
             console.error(`Óra #${index} dátum konverziós hiba:`, error, lesson.date);
             return;
@@ -194,28 +186,13 @@ function displayLessons() {
         } else {
             console.error(`❌ Óra #${index} cellája nem található:`, {
                 cellId,
-                lessonDate: lessonDate.toISOString(),
-                localDate: lessonDate.toLocaleString('hu-HU'),
-                timestamp: lessonDate.getTime(),
-                originalDate: lesson.date,
-                lessonId: lesson.id,
-                hour: lessonDate.getHours(),
-                minute: lessonDate.getMinutes()
+                lessonDate: lessonDate.toISOString()
             });
-
-            const allCells = Array.from(document.querySelectorAll('.calendar-cell'));
-            const cellTimestamps = allCells.map(c => {
-                const dt = c.getAttribute('data-datetime');
-                return { id: c.id, datetime: dt, timestamp: new Date(dt).getTime() };
-            });
-            const closest = cellTimestamps.reduce((prev, curr) => {
-                return Math.abs(curr.timestamp - lessonDate.getTime()) < Math.abs(prev.timestamp - lessonDate.getTime()) ? curr : prev;
-            });
-            console.log('Legközelebbi cella:', closest);
         }
     });
 }
 
+// ✅ ÚJ FORMÁTUM: Kezdési időpont - Tanuló neve / Tantárgy - Időtartam óra
 function createLessonCard(lesson, height) {
     const retainedClass = lesson.isRetained ? 'retained' : '';
     const checkIcon = lesson.isRetained ? '✅' : '☑️';
@@ -239,17 +216,33 @@ function createLessonCard(lesson, height) {
         displayDate = new Date();
     }
 
+    // ✅ JAVÍTOTT IDŐTARTAM FORMÁTUM
+    const durationText = lesson.duration === 1
+        ? '1 óra'
+        : lesson.duration % 1 === 0
+            ? `${lesson.duration} óra`
+            : `${lesson.duration} óra`;
+
     return `
         <div class="lesson-card ${retainedClass}" 
-             style="height: ${height}px;"
+             style="height: ${height}px; min-height: 50px;"
              draggable="true"
              ondragstart="handleDragStart(event, ${lesson.id})"
              ondragend="handleDragEnd(event)"
              ondblclick="editLesson(${lesson.id})">
-            <div class="lesson-time">${formatTime(displayDate)}</div>
-            <div class="lesson-student">${escapeHtml(lesson.studentName || 'Ismeretlen')}</div>
-            <div class="lesson-subject">${escapeHtml(lesson.subject || '')}</div>
-            <div class="lesson-duration">${lesson.duration}ó</div>
+            
+            <div class="lesson-header">
+                <span class="lesson-time">${formatTime(displayDate)}</span>
+                <span class="lesson-separator">-</span>
+                <span class="lesson-student">${escapeHtml(lesson.studentName || 'Ismeretlen')}</span>
+            </div>
+            
+            <div class="lesson-details">
+                <span class="lesson-subject">${escapeHtml(lesson.subject || '')}</span>
+                <span class="lesson-separator">-</span>
+                <span class="lesson-duration">${durationText}</span>
+            </div>
+            
             <div class="lesson-actions" onclick="event.stopPropagation()">
                 <button class="action-btn btn-check" 
                         onclick="event.stopPropagation(); toggleRetain(${lesson.id}, ${!lesson.isRetained})"
@@ -321,7 +314,7 @@ async function handleDrop(event, cellId, newDatetime) {
         duration: draggedLesson.duration,
         type: draggedLesson.type,
         date: formatDateTimeForBackend(newDate),
-        isRetained: draggedLesson.isRetained || false // ✅ FIX: default false
+        isRetained: draggedLesson.isRetained || false
     };
 
     console.log('Óra áthelyezése:', updatedLesson);
@@ -386,7 +379,6 @@ async function openLessonModal(datetime, lessonData = null) {
     if (lessonData) {
         modalTitle.textContent = '✏️ Óra szerkesztése';
         document.getElementById('lesson-id').value = lessonData.id;
-        // ✅ FIX: isRetained érték tárolása
         document.getElementById('lesson-is-retained').value = lessonData.isRetained ? 'true' : 'false';
         selectedCell = { datetime: date.toISOString() };
 
@@ -512,7 +504,6 @@ async function saveLessonFromModal(event) {
     const [hours, minutes] = timeInput.split(':').map(Number);
     const datetime = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
-    // ✅ FIX: isRetained érték helyes kezelése
     const isRetainedValue = document.getElementById('lesson-is-retained').value === 'true';
 
     const lessonData = {
@@ -522,7 +513,7 @@ async function saveLessonFromModal(event) {
         duration,
         type,
         date: formatDateTimeForBackend(datetime),
-        isRetained: lessonId ? isRetainedValue : false // ✅ Szerkesztésnél megtartjuk, új óránál false
+        isRetained: lessonId ? isRetainedValue : false
     };
 
     console.log('Mentendő óra:', lessonData);

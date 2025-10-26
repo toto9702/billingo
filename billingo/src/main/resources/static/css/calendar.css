@@ -53,7 +53,7 @@
 /* ===== NAPTÁR RÁCS - 20PX SOROK ===== */
 .calendar-grid {
     display: grid;
-    grid-template-columns: 100px repeat(7, 1fr); /* ✅ 60px -> 100px */
+    grid-template-columns: 100px repeat(7, 1fr);
     grid-template-rows: auto;
     grid-auto-rows: 20px;
     gap: 1px;
@@ -82,7 +82,7 @@
     color: white;
     padding: 0.15rem;
     text-align: center;
-    font-size: 0.55rem; /* ✅ Kicsit nagyobb betű */
+    font-size: 0.55rem;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -115,30 +115,31 @@
     border: 2px dashed var(--primary-color);
 }
 
-/* ===== ÓRA KÁRTYA - DRAGGABLE ===== */
+/* ===== ÓRA KÁRTYA - ÚJ DIZÁJN ===== */
 .lesson-card {
     background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-    border-left: 3px solid var(--warning-color);
-    border-radius: 4px;
-    font-size: 0.65rem;
+    border-left: 4px solid var(--warning-color);
+    border-radius: 6px;
+    font-size: 0.7rem;
     position: absolute;
     top: 0;
     left: 0;
     right: 1px;
-    padding: 0.3rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
-    cursor: move; /* ✅ Drag cursor */
+    gap: 0.35rem;
+    cursor: move;
     transition: var(--transition);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     z-index: 100;
     user-select: none;
+    min-height: 55px;
 }
 
 .lesson-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     z-index: 200;
 }
 
@@ -153,64 +154,115 @@
     border-left-color: var(--success-color);
 }
 
+/* ✅ ELSŐ SOR: Időpont - Tanuló neve */
+.lesson-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    pointer-events: none;
+    line-height: 1.2;
+}
+
 .lesson-time {
     font-weight: 700;
-    color: var(--text-dark);
-    font-size: 0.7rem;
-    pointer-events: none; /* ✅ Szöveg ne akadályozza a drag-et */
+    color: #1F2937;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.lesson-separator {
+    color: #6B7280;
+    font-weight: 700;
+    font-size: 0.75rem;
 }
 
 .lesson-student {
     font-weight: 600;
     color: var(--primary-color);
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ✅ MÁSODIK SOR: Tantárgy - Időtartam */
+.lesson-details {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
     pointer-events: none;
+    line-height: 1.2;
 }
 
 .lesson-subject {
-    color: #6B7280;
-    font-size: 0.6rem;
-    pointer-events: none;
+    color: #4B5563;
+    font-size: 0.7rem;
+    font-weight: 600;
 }
 
 .lesson-duration {
     color: #6B7280;
-    font-size: 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 700;
     font-style: italic;
-    pointer-events: none;
 }
 
+/* ✅ GOMBOK - MINDIG LÁTHATÓAK */
 .lesson-actions {
     display: flex;
-    gap: 0.2rem;
+    gap: 0.3rem;
     margin-top: auto;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    position: relative;
+    z-index: 10;
 }
 
 .action-btn {
     background: white;
-    border: none;
-    padding: 0.15rem 0.3rem;
-    border-radius: 3px;
+    border: 1.5px solid #D1D5DB;
+    padding: 0.25rem 0.4rem;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     transition: var(--transition);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
 }
 
 .action-btn:hover {
-    transform: scale(1.15);
+    transform: scale(1.2);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    z-index: 20;
 }
 
 .btn-check {
     color: var(--success-color);
 }
 
+.btn-check:hover {
+    background: #D1FAE5;
+    border-color: var(--success-color);
+}
+
 .btn-edit {
     color: var(--primary-color);
 }
 
+.btn-edit:hover {
+    background: #DBEAFE;
+    border-color: var(--primary-color);
+}
+
 .btn-delete {
     color: var(--error-color);
+}
+
+.btn-delete:hover {
+    background: #FEE2E2;
+    border-color: var(--error-color);
 }
 
 /* ===== MODAL ===== */
@@ -383,7 +435,8 @@
 
     .lesson-card {
         font-size: 0.6rem;
-        padding: 0.25rem;
+        padding: 0.3rem;
+        min-height: 45px;
     }
 
     .lesson-time,
@@ -391,17 +444,14 @@
         font-size: 0.65rem;
     }
 
-    .lesson-subject {
-        font-size: 0.55rem;
-    }
-
+    .lesson-subject,
     .lesson-duration {
-        font-size: 0.5rem;
+        font-size: 0.6rem;
     }
 
     .action-btn {
-        font-size: 0.7rem;
-        padding: 0.1rem 0.25rem;
+        font-size: 0.75rem;
+        padding: 0.15rem 0.3rem;
     }
 
     .modal-content {
